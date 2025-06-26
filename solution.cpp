@@ -235,6 +235,11 @@ vector<User> loadData(string &filename)
   {
     cout << "File: " << filename << " not found. Creating a new one...\n";
     ofstream createFile(filename);
+
+    User adminUser(generateID(), "admin", "admin123", 0.0, ADMIN);
+    users.push_back(adminUser);
+    saveData(filename, users);
+
     createFile.close();
   }
 
