@@ -31,7 +31,6 @@ private:
   UserType userType;
 
 public:
-  User() : ID(-1), username("admin"), password("admin123"), balance(0.0f), userType(ADMIN) {}
   User(int ID, string username, string password, float balance, UserType utype) : ID(ID), username(username), password(password), balance(balance), userType(utype) {}
   
   void changePassword()
