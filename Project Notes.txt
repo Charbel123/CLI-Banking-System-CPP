@@ -1,0 +1,12 @@
+Roles of an admin:
+1. register users - yes
+2. deposit for client - yes
+3. change password - yes
+
+Roles of a client:
+1. Withdraw - yes
+2. Deposit - yes
+3. Check balance - yes
+4. Change password - yes
+
+Store user data in usersDB.txt
