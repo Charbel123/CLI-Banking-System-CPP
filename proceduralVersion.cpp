@@ -43,11 +43,15 @@ void saveData() {
 
 void loadData() {
     ifstream inFile(FILENAME);
+
     if (!inFile.is_open()) {
         ofstream createFile(FILENAME);
+        createFile << to_string(generateID()) << ",admin,admin123,0.0,0" << endl; // Default admin user
         createFile.close();
+        loadData(); // Reload after creating the file
         return;
     }
+    
     string line;
     while (getline(inFile, line)) {
         stringstream ss(line);
@@ -228,7 +232,7 @@ void clientMenu() {
 }
 
 void displayMenu() {
-    if (loggedUser == -1) {
+    if (loggedUser == -1) { // means no user is logged in
         int choice;
         cout << "\n--- Main Menu ---\n";
         cout << "1. Admin Login\n2. Client Login\n3. Exit\nEnter choice: ";
