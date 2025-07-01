@@ -99,18 +99,43 @@ void changePassword() {
 
 void withdraw() {
     float amount;
-    cout << "Enter amount to withdraw: ";
-    cin >> amount;
-    if (amount > balances[loggedUser]) {
-        cout << "Insufficient funds.\n";
+    cout << "Input your password to proceed: "<<endl;
+    string pwd;
+    cin >> pwd;
+    if (pwd == passwords[loggedUser]) {
+        cout << "Enter amount to withdraw: ";
+        cin >> amount;
+        if (amount > balances[loggedUser]) {
+            cout << "Insufficient funds.\n";
+        } else {
+            balances[loggedUser] -= amount;
+            cout << "Transaction successful.\n";
+        }
     } else {
-        balances[loggedUser] -= amount;
-        cout << "Transaction successful.\n";
+        cout << "Incorrect password. Transaction failed.\n";
+        return;
     }
 }
 
 void deposit() {
     float amount;
+    string pwd;
+    cout << "Input your password to proceed: ";
+    cin >> pwd;
+    if (pwd == passwords[loggedUser]) {
+        cout << "Enter amount to deposit: \n";
+        cin >> amount;
+        if (amount > 0)  {
+            balances[loggedUser] += amount;
+            cout << "Transaction successful.\n";
+        } else {
+            cout << "Invalid amount. Transaction failed.\n";
+            return;
+        }
+    } else {
+        cout << "Incorrect password. Transaction failed.\n";
+        return;
+    }
     cout << "Enter amount to deposit: ";
     cin >> amount;
     balances[loggedUser] += amount;
@@ -153,7 +178,7 @@ void registerUser() {
         cin >> uname;
         bool exists = false;
         for (int i = 0; i < userCount; i++) {
-            if (usernames[i] == uname) {
+            if (lcText(usernames[i]) == lcText(uname)) {
                 exists = true;
                 cout << "Username already taken.\n";
                 break;
@@ -165,8 +190,15 @@ void registerUser() {
     do {
         cout << "Enter password: ";
         cin >> pwd;
+        if (pwd.length() < 6) {
+            cout << "Password must be at least 6 characters long. Try again.\n";
+            continue;
+        }
         cout << "Confirm password: ";
         cin >> confirmPwd;
+        if (pwd != confirmPwd) {
+            cout << "Passwords do not match. Try again.\n";
+        }
     } while (pwd != confirmPwd);
 
     IDs[userCount] = generateID();
@@ -174,9 +206,9 @@ void registerUser() {
     passwords[userCount] = pwd;
     balances[userCount] = 0.0f;
     userTypes[userCount] = utype;
-    loggedUser = userCount;
     userCount++;
     cout << "Registration successful.\n";
+    saveData();
 }
 
 void loginUser() {
@@ -186,7 +218,7 @@ void loginUser() {
     for (int i = 0; i < userCount; i++) {
         if (usernames[i] == uname) {
             int attempts = 3;
-            while (attempts--) {
+            while (attempts > 0 && passwords[i] != pwd) {
                 cout << "Enter password: ";
                 cin >> pwd;
                 if (pwd == passwords[i]) {
@@ -194,8 +226,10 @@ void loginUser() {
                     cout << "Logged in successfully.\n";
                     return;
                 }
+                attempts--;
                 cout << "Wrong password. Attempts left: " << attempts << endl;
             }
+            cout << "Too many failed attempts. Returning to main menu.\n";
             return;
         }
     }
@@ -205,7 +239,7 @@ void loginUser() {
 void adminMenu() {
     int choice;
     cout << "\n--- Admin Menu ---\n";
-    cout << "1. Deposit for Client\n2. Register Client\n3. Change Password\n4. Logout\nEnter choice: ";
+    cout << "1. Deposit for Client\n2. Register User\n3. Change Password\n4. Logout\nEnter choice: ";
     cin >> choice;
     switch (choice) {
         case 1: depositForClient(); break;
@@ -238,7 +272,7 @@ void displayMenu() {
         cout << "1. Admin Login\n2. Client Login\n3. Exit\nEnter choice: ";
         cin >> choice;
         switch (choice) {
-            case 1:
+            case 1: loginUser(); break;
             case 2: loginUser(); break;
             case 3: exit(0);
             default: cout << "Invalid choice.\n";
@@ -252,8 +286,13 @@ void displayMenu() {
 }
 
 int main() {
+    cout << "Welcome to the Banking System!\n";
+    cout << "-------------------------------\n";
+    cout << "Please wait while we load the data...\n";
     srand(time(0));
     loadData();
+    cout << "Data loaded successfully.\n";
+    cout << "You can now log in or register.\n";
     while (true) {
         displayMenu();
     }
